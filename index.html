@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
   
-  <!-- CSS Link -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -40,7 +39,6 @@
       <h1 style="font-size:32px; font-weight:700; color:var(--text-main); letter-spacing: -1.5px;">Infinity Gateway</h1>
     </div>
 
-    <!-- Login -->
     <div class="auth-card" id="login-card">
       <div class="auth-title">Welcome back</div>
       <div class="auth-subtitle">Securely access your digital assets</div>
@@ -59,7 +57,6 @@
       <div style="text-align:center; margin-top:30px; font-size:14px; color:var(--text-muted);">Don't have an account? <span style="color:var(--text-main); font-weight:600; cursor:pointer;" onclick="switchAuthFlow('signup-card')">Sign up</span></div>
     </div>
 
-    <!-- Signup -->
     <div class="auth-card hidden" id="signup-card">
       <div class="auth-title">Create account</div>
       <div class="auth-subtitle">Join the next-generation financial gateway</div>
@@ -142,7 +139,6 @@
 
       <div class="section-title">QUICK ACTIONS</div>
       <div class="actions-row">
-        <!-- Add Fund triggers switchView -->
         <div class="action-btn" onclick="switchView('view-add-fund')">
           <div class="action-icon" style="background:white;"><span class="material-symbols-rounded" style="color:var(--obsidian);">add</span></div>
           <div class="action-lbl">Add Fund</div>
@@ -167,7 +163,7 @@
       </div>
     </div>
 
-    <!-- ================= ADD FUND VIEW ================= -->
+    <!-- ADD FUND VIEW -->
     <div id="view-add-fund" class="screen-view hidden">
       <div class="header-nav">
         <div class="icon-btn" onclick="switchView('view-dashboard')"><span class="material-symbols-rounded">arrow_back</span></div>
@@ -178,7 +174,6 @@
       <div class="section-title">INFINITY GATEWAY</div>
       <h1 style="font-size:28px; font-weight:700; margin-bottom:20px; letter-spacing:-1px;">Deposit Funds</h1>
 
-      <!-- STATE 1: NOT CONFIGURED / DISABLED -->
       <div id="add-fund-not-configured" class="hidden summary-box" style="text-align:center; padding:50px 20px;">
         <span class="material-symbols-rounded" style="font-size:64px; margin-bottom:20px; color:var(--text-muted); opacity:0.5;">cloud_off</span>
         <h3 style="font-size:20px; font-weight:600; margin-bottom:12px;">Deposits Suspended</h3>
@@ -188,7 +183,6 @@
         </button>
       </div>
 
-      <!-- STATE 2: CONFIGURED (INSIDES) -->
       <div id="add-fund-configured" class="hidden">
         <div class="summary-box" style="text-align:center; padding:35px 20px;">
           <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; font-weight:600; text-transform:uppercase; letter-spacing: 1px;">UPI Address</p>
@@ -247,7 +241,15 @@
         <div class="sum-row"><span>Fee</span><span class="val" style="color:var(--success);">0.00</span></div>
         <div class="sum-total"><span>Total</span><span class="val" id="sum-total">₹ 0</span></div>
       </div>
-      <button class="btn-main" id="btn-pay" onclick="handlePayUser()">Confirm & Send</button>
+      
+      <!-- SWIPE TO PAY BUTTON -->
+      <div class="swipe-btn-container" id="swipe-pay-btn">
+        <div class="swipe-text" id="swipe-text">Swipe to Pay</div>
+        <div class="swipe-thumb" id="swipe-thumb">
+          <span class="material-symbols-rounded">arrow_forward</span>
+        </div>
+      </div>
+
       <div style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:20px; font-weight:500;"><span class="material-symbols-rounded" style="font-size:16px; vertical-align:middle;">verified_user</span> End-to-end encrypted</div>
     </div>
 
@@ -264,185 +266,32 @@
       </div>
     </div>
 
-    <!-- API VIEW -->
-    <div id="view-api" class="screen-view hidden">
-      <div class="header-nav"><div class="icon-btn" onclick="switchView('view-dashboard')"><span class="material-symbols-rounded">arrow_back</span></div><div class="nav-title">Developers</div><div style="width:44px;"></div></div>
-      
-      <!-- API Credentials Section -->
-      <div class="summary-box">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-          <h3 style="font-size:18px; font-weight:700; letter-spacing:-0.5px;">API Keys</h3>
-        </div>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:25px;">Store these credentials securely. They grant full access to your funds.</p>
-        
-        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-          Secret Token
-        </div>
-        <div style="display:flex; gap:12px;">
-          <div style="flex:1; background:rgba(255,255,255,0.7); border:1px solid var(--glass-border); border-radius:50px; padding:16px; font-family:monospace; font-size:16px; font-weight:600; text-align:center; letter-spacing:4px; color:var(--obsidian);" id="api-token-val">........</div>
-          <div style="background:var(--obsidian); color:white; padding:0 24px; border-radius:50px; display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; cursor:pointer; transition: 0.2s;" onclick="copyText(document.getElementById('api-token-val').innerText, 'Token Copied!')" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'">
-            Copy
-          </div>
-        </div>
-
-        <div style="background:rgba(225, 29, 72, 0.05); border:1px solid rgba(225, 29, 72, 0.2); border-radius:20px; padding:18px; margin-top:25px;">
-          <div style="color:var(--danger); font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-            <span class="material-symbols-rounded" style="font-size:18px;">warning</span> High Risk
-          </div>
-          <p style="color:var(--danger); font-size:12px; line-height: 1.6; opacity:0.9;">Never commit this token to public repositories or expose it in client-side code.</p>
-        </div>
-      </div>
-
-      <!-- API Endpoint Section -->
-      <div class="summary-box">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
-          <h3 style="font-size:18px; font-weight:700; letter-spacing:-0.5px;">Endpoints</h3>
-        </div>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:25px;">Use this Base URL for REST operations.</p>
-        
-        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-          Transfer URL
-        </div>
-        
-        <div id="api-url-display" style="font-family:monospace; padding:18px; background:rgba(255,255,255,0.7); border:1px solid var(--glass-border); border-radius:20px; font-size:13px; color:var(--obsidian); word-break:break-all; line-height:1.6; margin-bottom:20px; font-weight: 500;">
-          Loading...
-        </div>
-        
-        <button class="btn-main" style="background: white; color: var(--obsidian); border: 1px solid var(--glass-border); margin-bottom: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);" onclick="copyApiUrl()">
-          Copy URL
-        </button>
-
-        <!-- Test API Request -->
-        <div style="font-size:16px; font-weight:700; color:var(--obsidian); display:flex; align-items:center; gap:8px; margin-bottom:20px;">
-          <span class="material-symbols-rounded" style="font-size:20px;">terminal</span> Sandbox Editor
-        </div>
-        
-        <label style="font-size:12px; font-weight:500; color:var(--text-muted); margin-bottom:8px; display:block;">Target Phone</label>
-        <div class="input-wrap" style="margin-bottom:20px;">
-          <input type="tel" id="testApiPhone" placeholder="10-digit number" maxlength="10" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
-        </div>
-
-        <label style="font-size:12px; font-weight:500; color:var(--text-muted); margin-bottom:8px; display:block;">Amount</label>
-        <div class="input-wrap" style="margin-bottom:20px;">
-          <input type="number" id="testApiAmount" placeholder="0">
-        </div>
-
-        <label style="font-size:12px; font-weight:500; color:var(--text-muted); margin-bottom:8px; display:block;">Metadata (Comment)</label>
-        <div class="input-wrap" style="margin-bottom:30px;">
-          <input type="text" id="testApiComment" placeholder="Optional string">
-        </div>
-        
-        <button class="btn-main" style="background: var(--obsidian); margin-bottom: 15px;" onclick="testApiCall()">
-          Run Request
-        </button>
-
-        <button class="btn-main" style="background: rgba(255,255,255,0.7); color: var(--obsidian); border: 1px solid var(--glass-border); box-shadow: none;" onclick="showCurlCommand()">
-          Generate cURL
-        </button>
-
-        <pre id="test-api-response" class="hidden" style="background:#f1f5f9; color:#0f172a; padding:20px; border-radius:20px; margin-top:25px; font-family:monospace; font-size:13px; overflow-x:auto; white-space:pre-wrap; word-break:break-all; border: 1px solid #cbd5e1;"></pre>
-      </div>
-    </div>
-
   </div> <!-- End App Wrapper -->
 
   <!-- MODALS -->
 
-  <!-- Dynamic Transaction Details Modal -->
-  <div class="modal-backdrop" id="txn-details-modal" style="align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
-    <div class="txn-modal-sheet">
+  <!-- REDESIGNED Transaction Details Modal (Mirrors Success Modal UI) -->
+  <div class="modal-backdrop" id="txn-details-modal">
+    <div class="modal-sheet" style="text-align:center; padding:50px 30px;">
       
-      <!-- Background decorations -->
-      <div style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(0,0,0,0.06) 2px, transparent 2px); background-size: 15px 15px; border-radius: 0 24px 0 0; z-index: 0;"></div>
-      <div style="position: absolute; top: 40px; right: -40px; width: 150px; height: 150px; background: #e2e8f0; border-radius: 50%; opacity: 0.5; z-index: 0;"></div>
-
-      <div class="modal-close" style="position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; z-index: 10; border: none;" onclick="closeModal('txn-details-modal')">
-        <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
+      <div id="dtl-icon-container" style="width:80px; height:80px; background:var(--obsidian); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 25px auto; color:white; box-shadow:0 10px 30px rgba(0,0,0,0.15); border:4px solid white;">
+        <span class="material-symbols-rounded" style="font-size:40px;" id="dtl-icon">receipt_long</span>
       </div>
-
-      <div style="position: relative; z-index: 2;">
-        <h2 style="font-size: 18px; font-weight: 700; color: #000; margin-bottom: 24px;">Transaction Details</h2>
-
-        <div id="dtl-title" style="font-size: 15px; font-weight: 600; color: #000; margin-bottom: 4px;">...</div>
-        <div id="dtl-date" style="font-size: 13px; color: #64748b; margin-bottom: 20px; font-weight: 500;">...</div>
-
-        <div id="dtl-amt" style="font-size: 46px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 12px; letter-spacing: -1px;">+₹0.00</div>
-
-        <!-- Status Pill -->
-        <div id="dtl-status-pill" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 50px; background: #000; color: #fff; font-size: 13px; font-weight: 600; margin-bottom: 24px;">
-          <div id="dtl-status-icon-bg" style="width: 16px; height: 16px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #000;">
-            <span class="material-symbols-rounded" style="font-size: 12px; font-weight: 800;">check</span>
-          </div>
-          <span id="dtl-status-text">Success</span>
-        </div>
-
-        <!-- Main Detail Card -->
-        <div style="background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
-
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-              <span class="material-symbols-rounded" style="font-size: 18px;">receipt_long</span>
-            </div>
-            <div style="flex: 1;">
-              <div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Transaction ID</div>
-              <div id="dtl-id" style="font-size: 13px; font-weight: 600; color: #000;">...</div>
-            </div>
-            <span class="material-symbols-rounded" style="font-size: 18px; color: #000; cursor: pointer;" onclick="copyText(document.getElementById('dtl-id').innerText, 'ID Copied')">content_copy</span>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-              <span class="material-symbols-rounded" style="font-size: 18px;">account_balance_wallet</span>
-            </div>
-            <div style="flex: 1;">
-              <div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Payment Method</div>
-              <div id="dtl-method" style="font-size: 13px; font-weight: 600; color: #000;">API Transfer</div>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-              <span class="material-symbols-rounded" style="font-size: 18px;">shield</span>
-            </div>
-            <div style="flex: 1;">
-              <div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Net Balance After</div>
-              <div id="dtl-bal" style="font-size: 13px; font-weight: 600; color: #000;">₹0.00</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Account & Wallet Details Card (Styled like Success Modal summary rows) -->
-        <div style="background: #f8fafc; border-radius: 16px; padding: 16px; margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-              <span style="font-size: 13px; color: #64748b; font-weight: 500;">Account</span>
-              <span id="dtl-account" style="font-size: 14px; font-weight: 600; color: #000;">...</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-              <span style="font-size: 13px; color: #64748b; font-weight: 500;">Wallet</span>
-              <span id="dtl-wallet" style="font-size: 14px; font-weight: 600; color: #000;">...</span>
-          </div>
-        </div>
-
-        <!-- Comment Card -->
-        <div style="background: #f0fdf4; border-radius: 16px; padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-           <div style="width: 36px; height: 36px; background: #dcfce7; color: #166534; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-              <span class="material-symbols-rounded" style="font-size: 18px;">chat</span>
-            </div>
-            <div>
-              <div style="font-size: 11px; color: #166534; font-weight: 500; margin-bottom: 2px;">Comment</div>
-              <div id="dtl-comment" style="font-size: 13px; font-weight: 500; color: #000;">...</div>
-            </div>
-        </div>
-
-        <button style="width: 100%; padding: 16px; background: #000; color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: pointer; transition: 0.2s;" onmousedown="this.style.transform='scale(0.98)'" onmouseup="this.style.transform='scale(1)'" onclick="closeModal('txn-details-modal')">
-          <span class="material-symbols-rounded" style="font-size: 18px;">arrow_back</span> Back
-        </button>
-
+      
+      <h2 id="dtl-title-main" style="font-size:28px; font-weight:700; margin-bottom:10px; letter-spacing:-1px;">Transaction</h2>
+      <p id="dtl-desc-main" style="color:var(--text-muted); font-size:14px; margin-bottom:35px; font-weight:500;">...</p>
+      
+      <div style="background:rgba(255,255,255,0.6); border:1px solid var(--glass-border); border-radius:24px; padding:25px; margin-bottom:35px; text-align:left;">
+        <div class="sum-row"><span class="r-label">Account</span><span class="val" id="dtl-account-val">...</span></div>
+        <div class="sum-row"><span class="r-label">Wallet</span><span class="val" id="dtl-wallet-val">...</span></div>
+        <div class="sum-row"><span class="r-label">Amount</span><span class="val" id="dtl-amt-val" style="font-size:20px; font-weight: 700;">₹0</span></div>
+        <div class="sum-row" style="margin-bottom:0;"><span class="r-label">Hash</span><span class="val" id="dtl-id-val" style="font-size:12px; color:var(--text-muted); font-family: monospace;">...</span></div>
       </div>
+      
+      <button class="btn-main" style="background:var(--obsidian);" onclick="closeModal('txn-details-modal')">Close</button>
     </div>
   </div>
 
-  <!-- Edit Profile Modal -->
   <div class="modal-backdrop" id="edit-profile-modal">
     <div class="modal-sheet">
       <div class="modal-close" onclick="closeModal('edit-profile-modal')"><span class="material-symbols-rounded">close</span></div>
@@ -472,7 +321,6 @@
       <h2 style="font-size:28px; font-weight:700; margin-bottom:10px; letter-spacing:-1px;">Sent Successfully</h2>
       <p style="color:var(--text-muted); font-size:15px; margin-bottom:35px;">Funds have been delivered securely.</p>
       <div style="background:rgba(255,255,255,0.6); border:1px solid var(--glass-border); border-radius:24px; padding:25px; margin-bottom:35px; text-align:left;">
-        <!-- SEPARATED ACCOUNT AND WALLET ROWS -->
         <div class="sum-row"><span class="r-label">Account</span><span class="val" id="succ-name">...</span></div>
         <div class="sum-row"><span class="r-label">Wallet</span><span class="val" id="succ-wallet">...</span></div>
         <div class="sum-row"><span class="r-label">Amount</span><span class="val" id="succ-amt" style="color:var(--obsidian); font-size:20px; font-weight: 700;">₹0</span></div>
@@ -486,9 +334,7 @@
     <div class="modal-sheet">
       <div class="modal-close" onclick="closeModal('withdraw-modal')"><span class="material-symbols-rounded">close</span></div>
       <h3 style="font-size:24px; margin-bottom:12px; font-weight:700; letter-spacing:-0.5px;">Withdraw</h3>
-      
       <p id="withdraw-modal-desc" style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Loading parameters...</p>
-      
       <div class="input-wrap" style="margin-bottom:12px;"><input type="number" id="withdrawAmount" placeholder="Withdrawal Amount" style="width:100%; padding:18px 0; font-size:15px;" oninput="calcWithdrawTax()"></div>
       <div id="withdraw-tax-info" style="font-size:13px; color:var(--text-muted); margin-top:-5px; margin-bottom:25px; text-align:right;">Settlement: <b style="color:var(--obsidian)">₹0.00</b> (Fee: ₹0.00)</div>
       <div class="input-wrap" style="margin-bottom:30px;"><input type="text" id="withdrawUpi" placeholder="UPI Address" style="width:100%; padding:18px 0; font-size:15px;" required></div>
@@ -496,7 +342,6 @@
     </div>
   </div>
 
-  <!-- Bot Alert Modal -->
   <div class="modal-backdrop" id="bot-modal">
     <div class="modal-sheet">
       <div class="modal-close" onclick="closeModal('bot-modal')"><span class="material-symbols-rounded">close</span></div>
