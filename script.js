@@ -17,13 +17,10 @@ const db = getFirestore(app);
 const dummyDomain = "@infinitygateway.com";
 const BOT_TOKEN = "8280911898:AAFDTVyHxSbzP_fUGicuAyP-Kmpi07yLaEc";
 
-// --- NORMAL UI MODE ---
-
 let addFundSettings = { upiId: null, status: 'off' };
 let withdrawSettings = { min: 50, max: 500, flatTax: 2, percTax: 4 };
 let currentUserData = null; let generatedOTP = null; let pendingTgId = null; let globalTransactions = [];
 
-// Window Global Functions for UI interaction
 window.togglePwd = (id, el) => {
   const input = document.getElementById(id);
   if (input.type === 'password') {
@@ -35,94 +32,6 @@ window.togglePwd = (id, el) => {
   }
 };
 
-window.copyApiUrl = () => {
-  const url = document.getElementById('api-url-display').innerText;
-  if (url && !url.includes('Loading')) { copyText(url, "API URL Copied!"); }
-};
-
-window.testApiCall = async () => {
-  const phone = document.getElementById('testApiPhone').value.trim();
-  const amt = parseFloat(document.getElementById('testApiAmount').value);
-  const comment = document.getElementById('testApiComment').value.trim() || "";
-  
-  if (phone.length !== 10) return showToast("Enter a valid 10-digit number", "error");
-  if (isNaN(amt) || amt <= 0) return showToast("Enter a valid amount", "error");
-  if (!currentUserData || !currentUserData.apiToken) return showToast("API token not ready", "error");
-  
-  const responseBox = document.getElementById('test-api-response');
-  responseBox.classList.remove('hidden');
-  responseBox.style.color = 'var(--text-main)'; 
-  responseBox.innerText = '{\n  "status": "processing..."\n}';
-  
-  try {
-     const senderData = currentUserData;
-     const receiverQ = await getDocs(query(collection(db, "users"), where("phone", "==", phone)));
-     if (receiverQ.empty) throw new Error("Receiver wallet not found");
-     const receiverDoc = receiverQ.docs[0]; const receiverData = receiverDoc.data();
-
-     if (senderData.phone === receiverData.phone) throw new Error("Cannot transfer to self");
-
-     let txnId = ""; let nSBal = 0; let nRBal = 0;
-     await runTransaction(db, async (t) => {
-         const sRef = doc(db, "users", auth.currentUser.uid); const rRef = doc(db, "users", receiverDoc.id);
-         const sFresh = await t.get(sRef);
-         if (sFresh.data().balance < amt) throw new Error("Insufficient balance");
-
-         nSBal = sFresh.data().balance - amt; nRBal = receiverData.balance + amt;
-         t.update(sRef, { balance: nSBal });
-         t.update(rRef, { balance: nRBal, totalCredits: receiverData.totalCredits + amt });
-
-         const txnRef = doc(collection(db, "transactions")); txnId = txnRef.id;
-         t.set(txnRef, { type: "api_transfer", from: auth.currentUser.uid, to: receiverDoc.id, senderName: senderData.name, senderPhone: senderData.phone, receiverName: receiverData.name, receiverPhone: receiverData.phone, amount: amt, balanceAfter: nSBal, status: "success", comment: comment, timestamp: Date.now(), usersInvolved: [auth.currentUser.uid, receiverDoc.id] });
-     });
-
-     if(senderData.telegramUid) {
-        const sendAlert = `<b>💸 Amount Sent Successfully</b>\n━━━━━━━━━━━━━━━━━━\n 🆔 <b>Receiver :</b> <code>${receiverData.phone}</code>\n ⚡️ <b>Amount:</b> ₹${amt.toFixed(1)}\n 👩‍💻 <b>Method:</b> API\n 💰 <b>Updated Balance:</b> <code>₹${nSBal.toFixed(1)}</code>\n━━━━━━━━━━━━━━━━━━\n🚀 Payment has been securely debited!`;
-        sendBotMessage(senderData.telegramUid, sendAlert);
-     }
-     if(receiverData.telegramUid) {
-        const rcvAlert = `<b>💸 Amount Credited Successfully</b>\n━━━━━━━━━━━━━━━━━━\n 🆔 <b>Sender :</b> <code>${senderData.phone}</code>\n ⚡️ <b>Amount:</b> ₹${amt.toFixed(1)}\n 👩‍💻 <b>Method:</b> API\n 💰 <b>Updated Balance:</b> <code>₹${nRBal.toFixed(1)}</code>\n━━━━━━━━━━━━━━━━━━\n🚀 Payment has been securely Credited!`;
-        sendBotMessage(receiverData.telegramUid, rcvAlert);
-     }
-
-     const dObj = new Date(); 
-     const tStamp = `${('0'+dObj.getDate()).slice(-2)}-${('0'+(dObj.getMonth()+1)).slice(-2)}-${dObj.getFullYear()} ${('0'+dObj.getHours()).slice(-2)}:${('0'+dObj.getMinutes()).slice(-2)}:${('0'+dObj.getSeconds()).slice(-2)}`;
-
-     const responseData = {
-        status: "success",
-        message: "Payment successful",
-        data: {
-           transaction_id: txnId.toUpperCase(),
-           amount: amt.toString(),
-           receiver: { name: receiverData.name, number: receiverData.phone }
-        },
-        comment: comment,
-        timestamp: tStamp
-     };
-     responseBox.innerText = JSON.stringify(responseData, null, 2);
-  } catch(e) {
-     const errorData = {
-        status: "failure",
-        message: e.message || "Transaction failed"
-     };
-     responseBox.style.color = 'var(--danger)';
-     responseBox.innerText = JSON.stringify(errorData, null, 2);
-  }
-};
-
-window.showCurlCommand = () => {
-  if(!currentUserData || !currentUserData.apiToken) return;
-  const phone = document.getElementById('testApiPhone').value.trim() || "{number}";
-  const amt = document.getElementById('testApiAmount').value || "{amount}";
-  const comment = document.getElementById('testApiComment').value.trim() || "{comment}";
-  const url = `https://infinity-gateway-solution.web.app/?token=${currentUserData.apiToken}&paytoNumber=${phone}&amount=${amt}&comment=${encodeURIComponent(comment)}`;
-  
-  const responseBox = document.getElementById('test-api-response');
-  responseBox.classList.remove('hidden');
-  responseBox.style.color = 'var(--text-main)';
-  responseBox.innerText = `curl -X GET "${url}"`;
-};
-
 window.showToast = (msg, type = 'info') => {
   const c = document.getElementById('toast-container');
   const t = document.createElement('div'); t.className = `toast`;
@@ -131,15 +40,14 @@ window.showToast = (msg, type = 'info') => {
   t.innerHTML = `<span class="material-symbols-rounded" style="color:${cHex}; font-size: 20px;">${i}</span> ${msg}`;
   c.appendChild(t); 
   
-  // LIVE Swipe to dismiss logic
   let startX = 0; let currentX = 0;
   t.addEventListener('touchstart', e => { 
     startX = e.touches[0].clientX; 
-    t.style.transition = 'none'; // Critical for LIVE drag feel
+    t.style.transition = 'none'; 
   }, {passive: true});
   t.addEventListener('touchmove', e => {
     currentX = e.touches[0].clientX - startX;
-    t.style.transform = `translateX(${currentX}px)`; // Live positional update
+    t.style.transform = `translateX(${currentX}px)`; 
     t.style.opacity = 1 - (Math.abs(currentX)/200);
   }, {passive: true});
   t.addEventListener('touchend', e => {
@@ -245,7 +153,6 @@ const generateToken = () => Array.from({length:8}, ()=>String.fromCharCode(97+Ma
 let touchstartX = 0; let touchendX = 0;
 document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
 document.addEventListener('touchend', e => {
-  // PREVENT SWIPE IF AUTH SCREEN IS VISIBLE
   if (!document.getElementById('auth-screen').classList.contains('hidden')) return;
   touchendX = e.changedTouches[0].screenX;
   if (touchendX < touchstartX - 60) closeSidebar(); 
@@ -356,11 +263,9 @@ onAuthStateChanged(auth, async (user) => {
         const dStr = `${d.getDate()} ${d.toLocaleString('default',{month:'short'})} ${d.getFullYear()}`;
         document.getElementById('ui-date').innerText = dStr;
         
-        // Updated Avatar theming to match new style
         const avatarUrl = currentUserData.photoURL ? currentUserData.photoURL : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=0f172a&color=fff&size=128`;
         document.getElementById('header-avatar').src = avatarUrl; document.getElementById('prof-avatar').src = avatarUrl;
         
-        // Extract first name for dashboard greeting
         const firstName = currentUserData.name.split(' ')[0];
         document.querySelector('.section-title + h1').innerText = `Hello, ${firstName}`;
 
@@ -371,9 +276,6 @@ onAuthStateChanged(auth, async (user) => {
         if(!currentUserData.apiToken) {
           const newToken = generateToken(); updateDoc(doc(db, "users", user.uid), { apiToken: newToken }); currentUserData.apiToken = newToken;
         }
-        document.getElementById('api-token-val').innerText = currentUserData.apiToken;
-        
-        document.getElementById('api-url-display').innerText = `https://infinity-gateway-solution.web.app/?token=${currentUserData.apiToken}&paytoNumber={number}&amount={amount}&comment={comment}`;
       }
     });
 
@@ -484,11 +386,76 @@ window.handleFundRequest = async () => {
   btn.innerHTML = `Confirm Deposit`; btn.disabled = false;
 };
 
+// ---------------------------------------------------------
+// SWIPE TO PAY LOGIC
+// ---------------------------------------------------------
+const swipeContainer = document.getElementById('swipe-pay-btn');
+const swipeThumb = document.getElementById('swipe-thumb');
+const swipeText = document.getElementById('swipe-text');
+let isSwiping = false;
+let swipeStartX = 0;
+let currentTranslate = 0;
+
+window.resetSwipeBtn = () => {
+    swipeThumb.style.transition = 'transform 0.3s ease';
+    swipeThumb.style.transform = `translateX(0px)`;
+    swipeText.innerText = "Swipe to Pay";
+    swipeText.style.opacity = '1';
+    setTimeout(() => { swipeThumb.style.transition = 'none'; }, 300);
+    currentTranslate = 0;
+};
+
+const onSwipeStart = (e) => {
+    isSwiping = true;
+    swipeStartX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    swipeThumb.style.transition = 'none';
+};
+
+const onSwipeMove = (e) => {
+    if(!isSwiping) return;
+    const currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    const deltaX = currentX - swipeStartX;
+    const maxTranslate = swipeContainer.offsetWidth - swipeThumb.offsetWidth - 10;
+    
+    if(deltaX > 0 && deltaX <= maxTranslate) {
+        currentTranslate = deltaX;
+        swipeThumb.style.transform = `translateX(${deltaX}px)`;
+        swipeText.style.opacity = 1 - (deltaX / maxTranslate);
+    }
+};
+
+const onSwipeEnd = () => {
+    if(!isSwiping) return;
+    isSwiping = false;
+    const maxTranslate = swipeContainer.offsetWidth - swipeThumb.offsetWidth - 10;
+    
+    if(currentTranslate > maxTranslate * 0.60) {
+        swipeThumb.style.transition = 'transform 0.2s ease';
+        swipeThumb.style.transform = `translateX(${maxTranslate}px)`;
+        swipeText.innerText = "Processing...";
+        swipeText.style.opacity = '1';
+        window.handlePayUser();
+    } else {
+        window.resetSwipeBtn();
+    }
+};
+
+swipeThumb.addEventListener('mousedown', onSwipeStart);
+document.addEventListener('mousemove', onSwipeMove);
+document.addEventListener('mouseup', onSwipeEnd);
+
+swipeThumb.addEventListener('touchstart', onSwipeStart, {passive: true});
+document.addEventListener('touchmove', onSwipeMove, {passive: true});
+document.addEventListener('touchend', onSwipeEnd);
+
+
 window.handlePayUser = async () => {
-  const phone = document.getElementById('payPhone').value.trim(); const amt = parseFloat(document.getElementById('payAmount').value); const comment = document.getElementById('payComment').value.trim();
-  const btn = document.getElementById('btn-pay');
-  if(amt<=0 || phone.length !== 10) return showToast("Enter valid 10-digit number and amount.", "error"); if(phone === currentUserData.phone) return showToast("Cannot route to self.", "error");
-  btn.innerHTML = "Routing..."; btn.disabled = true;
+  const phone = document.getElementById('payPhone').value.trim(); 
+  const amt = parseFloat(document.getElementById('payAmount').value); 
+  const comment = document.getElementById('payComment').value.trim();
+  
+  if(amt<=0 || phone.length !== 10) { window.resetSwipeBtn(); return showToast("Enter valid 10-digit number and amount.", "error"); } 
+  if(phone === currentUserData.phone) { window.resetSwipeBtn(); return showToast("Cannot route to self.", "error"); }
 
   try {
     const q = await getDocs(query(collection(db, "users"), where("phone", "==", phone)));
@@ -522,40 +489,44 @@ window.handlePayUser = async () => {
     
     switchView('view-dashboard'); openModal('success-modal');
   } catch (e) { showToast(e.message, "error"); }
-  btn.innerHTML = "Pay Now"; btn.disabled = false;
+  
+  window.resetSwipeBtn();
 };
 
 window.openTxnDetails = (index) => {
   const txn = globalTransactions[index]; const isCredit = txn.to === auth.currentUser.uid || txn.type === 'add_fund';
-  let title, amtSign, amtColor, method;
+  let title, amtSign, amtColor, accountName, walletStr, iconName;
   
-  const ribbonBg = document.getElementById('dtl-ribbon-bg'); const ribbonIcon = document.getElementById('dtl-ribbon-icon');
-  const statusPill = document.getElementById('dtl-status-pill'); const statusIconBg = document.getElementById('dtl-status-icon-bg');
-
   if(txn.type === 'withdrawal') { 
-    title = `Withdraw`; amtSign = '-'; amtColor = 'var(--text-main)'; method = 'Bank Routing'; 
-    document.getElementById('dtl-account').innerText = 'Self';
-    document.getElementById('dtl-wallet').innerText = txn.upiId || 'N/A';
+    title = `Withdrawal`; amtSign = '-'; amtColor = 'var(--text-main)'; 
+    accountName = 'Self'; walletStr = txn.upiId || 'N/A'; iconName = 'account_balance';
   } else if(txn.type === 'add_fund') {
-    title = `Deposit Cleared`; amtSign = '+'; amtColor = '#059669'; method = 'Network Deposit';
-    document.getElementById('dtl-account').innerText = 'Self';
-    document.getElementById('dtl-wallet').innerText = 'Network Deposit';
+    title = `Deposit Cleared`; amtSign = '+'; amtColor = '#059669'; 
+    accountName = 'Self'; walletStr = 'Network Deposit'; iconName = 'add';
   } else { 
     const cName = isCredit ? (txn.senderName||'User') : (txn.receiverName||'User');
-    title = isCredit ? `Received from ${cName}` : `Sent to ${cName}`;
-    amtSign = isCredit ? '+' : '-'; amtColor = isCredit ? '#059669' : 'var(--text-main)'; method = txn.type === 'api_transfer' ? 'API Request' : 'P2P Transfer'; 
-    
-    document.getElementById('dtl-account').innerText = cName;
-    document.getElementById('dtl-wallet').innerText = isCredit ? maskPhone(txn.senderPhone) : maskPhone(txn.receiverPhone);
+    title = isCredit ? `Received Funds` : `Sent Successfully`;
+    amtSign = isCredit ? '+' : '-'; 
+    amtColor = isCredit ? '#059669' : 'var(--text-main)'; 
+    iconName = isCredit ? 'south_west' : 'north_east';
+    accountName = cName;
+    walletStr = isCredit ? maskPhone(txn.senderPhone) : maskPhone(txn.receiverPhone);
   }
   
-  document.getElementById('dtl-title').innerHTML = title;
+  document.getElementById('dtl-title-main').innerText = title;
+  document.getElementById('dtl-icon').innerText = iconName;
   const d = new Date(txn.timestamp);
-  document.getElementById('dtl-date').innerText = `${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}, ${d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
-  document.getElementById('dtl-amt').innerText = `${amtSign}₹${parseFloat(txn.amount).toFixed(2)}`; document.getElementById('dtl-amt').style.color = amtColor;
-  document.getElementById('dtl-id').innerText = txn.id.toUpperCase(); document.getElementById('dtl-method').innerText = method; 
-  document.getElementById('dtl-bal').innerText = txn.balanceAfter !== undefined ? `₹${parseFloat(txn.balanceAfter).toFixed(2)}` : 'N/A';
-  document.getElementById('dtl-comment').innerText = txn.comment ? txn.comment : "None";
+  document.getElementById('dtl-desc-main').innerText = `${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} • ${d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  
+  document.getElementById('dtl-account-val').innerText = accountName;
+  document.getElementById('dtl-wallet-val').innerText = walletStr;
+  
+  const amtElem = document.getElementById('dtl-amt-val');
+  amtElem.innerText = `${amtSign}₹${parseFloat(txn.amount).toFixed(2)}`;
+  amtElem.style.color = amtColor;
+  
+  document.getElementById('dtl-id-val').innerText = txn.id.toUpperCase();
+  
   openModal('txn-details-modal');
 };
 
