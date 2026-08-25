@@ -14,13 +14,26 @@
   <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
   <aside class="sidebar-menu" id="sidebar">
     <div class="sidebar-header">
-      <div><h2 style="margin-bottom: 2px;">Infinity Gateway</h2></div>
+      <div class="icon">
+        <svg style="width:24px; height:12px;" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 25 10 C 5 10 5 40 25 40 C 45 40 55 10 75 10 C 95 10 95 40 75 40 C 55 40 45 10 25 10 Z" stroke="var(--text-main)" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div><h2 style="margin-bottom: 2px;">Infinity Gateway</h2><p style="font-size:11px; color:var(--text-muted); font-weight:500;">PAYMENT GATEWAY</p></div>
     </div>
     <div class="menu-list">
       <div class="menu-item active" onclick="navigateTo('dashboard.html')"><span class="material-symbols-rounded">space_dashboard</span> Dashboard</div>
       <div class="menu-item" onclick="navigateTo('quickpay.html')"><span class="material-symbols-rounded">send_money</span> Quick Pay</div>
       <div class="menu-item" onclick="navigateTo('api.html')"><span class="material-symbols-rounded">api</span> Wallet API</div>
-      <div class="menu-item" onclick="logout()" style="color:var(--danger);"><span class="material-symbols-rounded">logout</span> Logout</div>
+      <div class="menu-item" onclick="navigateTo('profile.html')"><span class="material-symbols-rounded">tune</span> Preferences</div>
+      <div class="menu-item" onclick="closeSidebar(); openModal('bot-modal')"><span class="material-symbols-rounded">notifications_active</span> Bot Alert</div>
+      <div class="menu-item" onclick="closeSidebar(); openModal('withdraw-modal')"><span class="material-symbols-rounded">account_balance</span> Withdraw</div>
+      
+      <div class="menu-item" style="background:var(--obsidian); color:white; margin-top:20px; border-radius:50px;" onclick="window.open('https://t.me/BotzByPRIME', '_blank')"><span class="material-symbols-rounded">campaign</span> Announcements</div>
+      <div class="menu-item" style="background:rgba(255,255,255,0.5); color:var(--text-main); border:1px solid var(--glass-border); border-radius:50px;" onclick="window.open('https://t.me/PrimeBot_Maker', '_blank')"><span class="material-symbols-rounded">support_agent</span> Support</div>
+
+      <div style="flex:1;"></div>
+      <div class="menu-item" style="color:var(--danger); justify-content:center; font-weight:600;" onclick="logout()"><span class="material-symbols-rounded">logout</span> Logout</div>
     </div>
   </aside>
 
@@ -29,7 +42,7 @@
       <div class="header-nav">
         <div class="icon-btn" onclick="openSidebar()"><span class="material-symbols-rounded">segment</span></div>
         <div class="nav-title">Dashboard</div>
-        <div class="icon-btn" style="border-radius:50%; overflow:hidden; padding: 0;"><img id="header-avatar" src="" style="width:100%; height:100%; object-fit:cover;"></div>
+        <div class="icon-btn" style="border-radius:50%; overflow:hidden; padding: 0;" onclick="navigateTo('profile.html')"><img id="header-avatar" src="" style="width:100%; height:100%; object-fit:cover;"></div>
       </div>
 
       <div class="section-title">Account Overview</div>
@@ -38,24 +51,42 @@
       <div class="dash-card">
         <div class="dc-top">
           <div class="dc-label"><span class="material-symbols-rounded" style="font-size:18px;">wallet</span> Net Balance</div>
+          <div class="dc-badge"><span class="material-symbols-rounded" style="font-size:14px;">bolt</span> Active</div>
         </div>
         <div class="dc-bal"><span>₹</span><span id="ui-balance">0.00</span></div>
         <div class="dc-grid">
           <div class="dc-box"><div class="dc-box-title">NUMBER</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px;">call</span> <span id="ui-phone">...</span></div></div>
           <div class="dc-box"><div class="dc-box-title">Email</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px;">mail</span> <span id="ui-email">...</span></div></div>
+          <div class="dc-box"><div class="dc-box-title">Status</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px; color:#10b981;">verified</span> Verified</div></div>
+          <div class="dc-box"><div class="dc-box-title">Joined</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px;">event</span> <span id="ui-date">...</span></div></div>
         </div>
       </div>
 
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">arrow_upward</span></div><div class="stat-val">₹<span id="ui-total-credit">0</span></div><div class="stat-lbl">Total Credit</div></div>
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">done_all</span></div><div class="stat-val" id="ui-total-success">0</div><div class="stat-lbl">Successful</div></div>
         <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">sync_alt</span></div><div class="stat-val" id="ui-total-txns">0</div><div class="stat-lbl">Total Txns</div></div>
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">health_and_safety</span></div><div class="stat-val">100%</div><div class="stat-lbl">Success Rate</div></div>
       </div>
 
       <div class="section-title">QUICK ACTIONS</div>
       <div class="actions-row">
+        <!-- ALL Original Buttons are back -->
+        <div class="action-btn" onclick="navigateTo('addfund.html')">
+          <div class="action-icon" style="background:white;"><span class="material-symbols-rounded" style="color:var(--obsidian);">add</span></div>
+          <div class="action-lbl">Add Fund</div>
+        </div>
+        <div class="action-btn" onclick="openModal('withdraw-modal')">
+          <div class="action-icon"><span class="material-symbols-rounded">account_balance</span></div>
+          <div class="action-lbl">Withdraw</div>
+        </div>
         <div class="action-btn" onclick="navigateTo('quickpay.html')">
           <div class="action-icon"><span class="material-symbols-rounded">arrow_forward</span></div>
           <div class="action-lbl">Quick Pay</div>
+        </div>
+        <div class="action-btn" onclick="openModal('bot-modal')">
+          <div class="action-icon"><span class="material-symbols-rounded">notifications</span></div>
+          <div class="action-lbl">Bot Alert</div>
         </div>
       </div>
 
@@ -66,36 +97,80 @@
     </div>
   </div>
 
-  <!-- Shared Transaction Detail Modal -->
+  <!-- Dynamic Transaction Details Modal with Embedded Icon System -->
   <div class="modal-backdrop" id="txn-details-modal" style="align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
     <div class="txn-modal-sheet">
+      <div style="position: absolute; top: 0; right: 0; width: 150px; height: 150px; background: radial-gradient(circle, rgba(0,0,0,0.06) 2px, transparent 2px); background-size: 15px 15px; border-radius: 0 24px 0 0; z-index: 0;"></div>
       <div class="modal-close" style="position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; z-index: 10; border: none;" onclick="closeModal('txn-details-modal')">
         <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
       </div>
-      <div style="position: relative; z-index: 2;">
-        <h2 style="font-size: 18px; font-weight: 700; color: #000; margin-bottom: 24px;">Transaction Details</h2>
+
+      <div style="position: relative; z-index: 2; text-align:center;">
+        <h2 style="font-size: 18px; font-weight: 700; color: #000; margin-bottom: 24px; text-align:left;">Transaction Details</h2>
+
+        <!-- This gets dynamically populated in JS -->
+        <div id="dtl-icon-container" style="width:80px; height:80px; background:var(--obsidian); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 15px auto; color:white; box-shadow:0 10px 30px rgba(0,0,0,0.15); border:4px solid white;">
+          <span class="material-symbols-rounded" style="font-size:40px;">done</span>
+        </div>
+
         <div id="dtl-title" style="font-size: 15px; font-weight: 600; color: #000; margin-bottom: 4px;">...</div>
         <div id="dtl-date" style="font-size: 13px; color: #64748b; margin-bottom: 20px; font-weight: 500;">...</div>
-        <div id="dtl-amt" style="font-size: 46px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 12px; letter-spacing: -1px;">+₹0.00</div>
+        <div id="dtl-amt" style="font-size: 46px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 24px; letter-spacing: -1px;">+₹0.00</div>
 
-        <div style="background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+        <!-- Detail Card -->
+        <div style="background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); text-align:left;">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><span class="material-symbols-rounded" style="font-size: 18px;">receipt_long</span></div>
             <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Transaction ID</div><div id="dtl-id" style="font-size: 13px; font-weight: 600; color: #000;">...</div></div>
             <span class="material-symbols-rounded" style="font-size: 18px; color: #000; cursor: pointer;" onclick="copyText(document.getElementById('dtl-id').innerText, 'ID Copied')">content_copy</span>
           </div>
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
-            <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Payment Method</div><div id="dtl-method" style="font-size: 13px; font-weight: 600; color: #000;">API Transfer</div></div>
+            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><span class="material-symbols-rounded" style="font-size: 18px;">account_balance_wallet</span></div>
+            <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Payment Method</div><div id="dtl-method" style="font-size: 13px; font-weight: 600; color: #000;">...</div></div>
           </div>
           <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center;"><span class="material-symbols-rounded" style="font-size: 18px;">shield</span></div>
             <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Net Balance After</div><div id="dtl-bal" style="font-size: 13px; font-weight: 600; color: #000;">₹0.00</div></div>
           </div>
         </div>
 
-        <div style="background: #f8fafc; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+        <div style="background: #f8fafc; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; text-align:left;">
+           <div style="width: 36px; height: 36px; background: #000; color: #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><span class="material-symbols-rounded" style="font-size: 18px;">calendar_today</span></div>
             <div><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Notes</div><div id="dtl-notes" style="font-size: 13px; font-weight: 500; color: #000;">...</div></div>
         </div>
+        
+        <div style="background: #f0fdf4; border-radius: 16px; padding: 12px 16px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; text-align:left;">
+           <div style="width: 36px; height: 36px; background: #dcfce7; color: #166534; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><span class="material-symbols-rounded" style="font-size: 18px;">chat</span></div>
+            <div><div style="font-size: 11px; color: #166534; font-weight: 500; margin-bottom: 2px;">Comment</div><div id="dtl-comment" style="font-size: 13px; font-weight: 500; color: #000;">...</div></div>
+        </div>
 
-        <button style="width: 100%; padding: 16px; background: #000; color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;" onclick="closeModal('txn-details-modal')">Back</button>
+        <button style="width: 100%; padding: 16px; background: #000; color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s;" onclick="closeModal('txn-details-modal')">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Withdraw Modal -->
+  <div class="modal-backdrop" id="withdraw-modal">
+    <div class="modal-sheet">
+      <div class="modal-close" onclick="closeModal('withdraw-modal')"><span class="material-symbols-rounded">close</span></div>
+      <h3 style="font-size:24px; margin-bottom:12px; font-weight:700; letter-spacing:-0.5px;">Withdraw</h3>
+      <p id="withdraw-modal-desc" style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Loading parameters...</p>
+      <div class="input-wrap" style="margin-bottom:12px;"><input type="number" id="withdrawAmount" placeholder="Withdrawal Amount" style="width:100%; padding:18px 0; font-size:15px;" oninput="calcWithdrawTax()"></div>
+      <div id="withdraw-tax-info" style="font-size:13px; color:var(--text-muted); margin-top:-5px; margin-bottom:25px; text-align:right;">Settlement: <b style="color:var(--obsidian)">₹0.00</b> (Fee: ₹0.00)</div>
+      <div class="input-wrap" style="margin-bottom:30px;"><input type="text" id="withdrawUpi" placeholder="UPI Address" style="width:100%; padding:18px 0; font-size:15px;" required></div>
+      <button class="btn-main" id="btn-withdraw" style="background:var(--obsidian);" onclick="handleWithdraw()">Confirm Withdrawal</button>
+    </div>
+  </div>
+
+  <!-- Shared Bot Alert Modal -->
+  <div class="modal-backdrop" id="bot-modal">
+    <div class="modal-sheet">
+      <div class="modal-close" onclick="closeModal('bot-modal')"><span class="material-symbols-rounded">close</span></div>
+      <h3 style="font-size:24px; margin-bottom:12px; font-weight:700; letter-spacing:-0.5px;">Configure Bot Alert</h3>
+      <div id="bot-step-1">
+        <p style="color:var(--text-muted); font-size:14px; margin-bottom:30px;">Connect your Telegram ID to receive real-time execution receipts.</p>
+        <div class="input-wrap" style="margin-bottom:25px;"><input type="text" id="botTgId" placeholder="Telegram Chat ID" style="width:100%; padding:18px 0; font-size:15px;"></div>
+        <button class="btn-main" id="btn-send-otp" style="background:var(--obsidian);" onclick="sendTelegramOTP()">Send OTP</button>
       </div>
     </div>
   </div>
