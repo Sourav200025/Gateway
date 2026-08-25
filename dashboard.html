@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard - Infinity Gateway</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+</head>
+<body>
+  <div id="toast-container"></div>
+  
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+  <aside class="sidebar-menu" id="sidebar">
+    <div class="sidebar-header">
+      <div><h2 style="margin-bottom: 2px;">Infinity Gateway</h2></div>
+    </div>
+    <div class="menu-list">
+      <div class="menu-item active" onclick="navigateTo('dashboard.html')"><span class="material-symbols-rounded">space_dashboard</span> Dashboard</div>
+      <div class="menu-item" onclick="navigateTo('quickpay.html')"><span class="material-symbols-rounded">send_money</span> Quick Pay</div>
+      <div class="menu-item" onclick="navigateTo('api.html')"><span class="material-symbols-rounded">api</span> Wallet API</div>
+      <div class="menu-item" onclick="logout()" style="color:var(--danger);"><span class="material-symbols-rounded">logout</span> Logout</div>
+    </div>
+  </aside>
+
+  <div id="app-wrapper" class="app-wrapper">
+    <div id="view-dashboard" class="screen-view">
+      <div class="header-nav">
+        <div class="icon-btn" onclick="openSidebar()"><span class="material-symbols-rounded">segment</span></div>
+        <div class="nav-title">Dashboard</div>
+        <div class="icon-btn" style="border-radius:50%; overflow:hidden; padding: 0;"><img id="header-avatar" src="" style="width:100%; height:100%; object-fit:cover;"></div>
+      </div>
+
+      <div class="section-title">Account Overview</div>
+      <h1 style="font-size:28px; font-weight:700; margin-bottom:20px; letter-spacing:-1px;">Hello, User</h1>
+
+      <div class="dash-card">
+        <div class="dc-top">
+          <div class="dc-label"><span class="material-symbols-rounded" style="font-size:18px;">wallet</span> Net Balance</div>
+        </div>
+        <div class="dc-bal"><span>₹</span><span id="ui-balance">0.00</span></div>
+        <div class="dc-grid">
+          <div class="dc-box"><div class="dc-box-title">NUMBER</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px;">call</span> <span id="ui-phone">...</span></div></div>
+          <div class="dc-box"><div class="dc-box-title">Email</div><div class="dc-box-val"><span class="material-symbols-rounded" style="font-size:16px;">mail</span> <span id="ui-email">...</span></div></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">arrow_upward</span></div><div class="stat-val">₹<span id="ui-total-credit">0</span></div><div class="stat-lbl">Total Credit</div></div>
+        <div class="stat-card"><div class="stat-icon"><span class="material-symbols-rounded">sync_alt</span></div><div class="stat-val" id="ui-total-txns">0</div><div class="stat-lbl">Total Txns</div></div>
+      </div>
+
+      <div class="section-title">QUICK ACTIONS</div>
+      <div class="actions-row">
+        <div class="action-btn" onclick="navigateTo('quickpay.html')">
+          <div class="action-icon"><span class="material-symbols-rounded">arrow_forward</span></div>
+          <div class="action-lbl">Quick Pay</div>
+        </div>
+      </div>
+
+      <div class="txn-card">
+        <div class="txn-head"><h3>Transaction Overview</h3></div>
+        <div id="ui-txn-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Transaction Detail Modal -->
+  <div class="modal-backdrop" id="txn-details-modal" style="align-items: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
+    <div class="txn-modal-sheet">
+      <div class="modal-close" style="position: absolute; top: 20px; right: 20px; width: 36px; height: 36px; background: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; z-index: 10; border: none;" onclick="closeModal('txn-details-modal')">
+        <span class="material-symbols-rounded" style="font-size: 20px;">close</span>
+      </div>
+      <div style="position: relative; z-index: 2;">
+        <h2 style="font-size: 18px; font-weight: 700; color: #000; margin-bottom: 24px;">Transaction Details</h2>
+        <div id="dtl-title" style="font-size: 15px; font-weight: 600; color: #000; margin-bottom: 4px;">...</div>
+        <div id="dtl-date" style="font-size: 13px; color: #64748b; margin-bottom: 20px; font-weight: 500;">...</div>
+        <div id="dtl-amt" style="font-size: 46px; font-weight: 800; color: #000; line-height: 1; margin-bottom: 12px; letter-spacing: -1px;">+₹0.00</div>
+
+        <div style="background: #fff; border: 1px solid #f1f5f9; border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+            <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Transaction ID</div><div id="dtl-id" style="font-size: 13px; font-weight: 600; color: #000;">...</div></div>
+            <span class="material-symbols-rounded" style="font-size: 18px; color: #000; cursor: pointer;" onclick="copyText(document.getElementById('dtl-id').innerText, 'ID Copied')">content_copy</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+            <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Payment Method</div><div id="dtl-method" style="font-size: 13px; font-weight: 600; color: #000;">API Transfer</div></div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="flex: 1;"><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Net Balance After</div><div id="dtl-bal" style="font-size: 13px; font-weight: 600; color: #000;">₹0.00</div></div>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px;">
+            <div><div style="font-size: 11px; color: #64748b; font-weight: 500; margin-bottom: 2px;">Notes</div><div id="dtl-notes" style="font-size: 13px; font-weight: 500; color: #000;">...</div></div>
+        </div>
+
+        <button style="width: 100%; padding: 16px; background: #000; color: #fff; border-radius: 50px; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer;" onclick="closeModal('txn-details-modal')">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
