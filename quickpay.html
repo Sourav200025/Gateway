@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Quick Pay - Infinity Gateway</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+</head>
+<body>
+  <div id="toast-container"></div>
+  
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+  <aside class="sidebar-menu" id="sidebar">
+    <div class="sidebar-header"><div><h2 style="margin-bottom: 2px;">Infinity Gateway</h2></div></div>
+    <div class="menu-list">
+      <div class="menu-item" onclick="navigateTo('dashboard.html')"><span class="material-symbols-rounded">space_dashboard</span> Dashboard</div>
+      <div class="menu-item active" onclick="navigateTo('quickpay.html')"><span class="material-symbols-rounded">send_money</span> Quick Pay</div>
+      <div class="menu-item" onclick="navigateTo('api.html')"><span class="material-symbols-rounded">api</span> Wallet API</div>
+      <div class="menu-item" onclick="logout()" style="color:var(--danger);"><span class="material-symbols-rounded">logout</span> Logout</div>
+    </div>
+  </aside>
+
+  <div id="app-wrapper" class="app-wrapper">
+    <div id="view-pay" class="screen-view">
+      <div class="header-nav">
+        <div class="icon-btn" onclick="navigateTo('dashboard.html')"><span class="material-symbols-rounded">arrow_back</span></div>
+        <div class="nav-title">Send</div>
+        <div style="width:44px;"></div>
+      </div>
+
+      <div class="section-title">QUICK PAY</div>
+      <h1 style="font-size:28px; font-weight:700; margin-bottom:20px; letter-spacing:-1px;">Transfer Funds</h1>
+      
+      <div class="input-group"><label class="input-label"> Wallet Number</label><div class="input-wrap"><span class="material-symbols-rounded">dialpad</span><input type="tel" id="payPhone" placeholder="Enter 10-digit number" maxlength="10" oninput="updateSummary()"></div></div>
+      <div class="input-group"><label class="input-label">Value</label><div class="input-wrap"><span style="color:var(--text-muted); font-size:20px; font-weight:600; margin-right:12px;">₹</span><input type="number" id="payAmount" placeholder="0" oninput="updateSummary()"></div>
+        <div class="chip-row">
+          <div class="chip" onclick="setAmount(100)">₹ 100</div><div class="chip" onclick="setAmount(500)">₹ 500</div><div class="chip" onclick="setAmount(1000)">₹ 1K</div>
+        </div>
+      </div>
+      <div class="input-group"><label class="input-label">Comment (Optional)</label><div class="input-wrap"><span class="material-symbols-rounded">notes</span><input type="text" id="payComment" placeholder="Add a comment"></div></div>
+
+      <div class="summary-box">
+        <div class="sum-title">CONFIRMATION</div>
+        <div class="sum-row"><span>To</span><span class="val" id="sum-phone">-</span></div>
+        <div class="sum-row"><span>Amount</span><span class="val" id="sum-amt">₹ 0</span></div>
+        <div class="sum-row"><span>Fee</span><span class="val" style="color:var(--success);">0.00</span></div>
+        <div class="sum-total"><span>Total</span><span class="val" id="sum-total">₹ 0</span></div>
+      </div>
+      <button class="btn-main" id="btn-pay" onclick="handlePayUser()">Confirm & Send</button>
+    </div>
+  </div>
+
+  <!-- Shared Success Modal -->
+  <div class="modal-backdrop" id="success-modal">
+    <div class="modal-sheet" style="text-align:center; padding:50px 30px;">
+      <div id="succ-icon-container" style="width:80px; height:80px; background:var(--obsidian); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 25px auto; color:white;">
+        <span class="material-symbols-rounded" style="font-size:40px;">done</span>
+      </div>
+      <h2 style="font-size:28px; font-weight:700; margin-bottom:10px; letter-spacing:-1px;">Sent Successfully</h2>
+      <div style="background:rgba(255,255,255,0.6); border:1px solid var(--glass-border); border-radius:24px; padding:25px; margin-bottom:35px; text-align:left;">
+        <div class="sum-row"><span class="r-label">To</span><span class="val" id="succ-name">...</span></div>
+        <div class="sum-row"><span class="r-label">Amount</span><span class="val" id="succ-amt" style="color:var(--obsidian); font-size:20px; font-weight: 700;">₹0</span></div>
+        <div class="sum-row" style="margin-bottom:0;"><span class="r-label">Hash</span><span class="val" id="succ-id" style="font-size:12px; color:var(--text-muted); font-family: monospace;">...</span></div>
+      </div>
+      <button class="btn-main" style="background:var(--obsidian);" onclick="closeModal('success-modal'); navigateTo('dashboard.html');">Close</button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
